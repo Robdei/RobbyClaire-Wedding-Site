@@ -1378,6 +1378,49 @@ p {
   text-align: center;
 }
 
+.strauss-photo {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: var(--shadow-soft);
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+  .strauss-photo {
+    max-width: 250px;
+    margin: 0 auto 1rem;
+  }
+
+  .hero-card {
+    padding: 1.5rem;
+  }
+
+  .strauss-title {
+    font-size: 1.4rem;
+  }
+
+  .strauss-description {
+    font-size: 0.95rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .strauss-card {
+    padding: 1.5rem;
+  }
+
+  .strauss-card h3 {
+    font-size: 1.3rem;
+  }
+
+  .strauss-card p,
+  .strauss-achievements li {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+}
+
 .image-placeholder {
   width: 200px;
   height: 250px;
