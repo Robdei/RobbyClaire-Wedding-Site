@@ -1,0 +1,317 @@
+=== index.html ===
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Celebrate the wedding of Robby & Claire at Roblar Winery in Santa Ynez, CA. Join us November 7, 2026 for a wine country celebration.">
+  <meta name="keywords" content="wedding, Robby and Claire, Roblar Winery, Santa Ynez wedding, wine country wedding">
+  <title>Robby & Claire — November 7, 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Karla:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <!-- Scroll Progress Bar -->
+  <div class="scroll-progress">
+    <div class="scroll-progress-bar"></div>
+  </div>
+
+  <div class="page-background"></div>
+  <header class="site-header">
+    <div class="logo-area">
+      <a class="brand" href="#hero">Robby & Claire</a>
+    </div>
+    <nav class="main-nav">
+      <a href="#details">Details</a>
+      <a href="#story">Story</a>
+      <a href="venue.html">Venue</a>
+      <a href="#rsvp">RSVP</a>
+      <a href="strauss.html">Officiator</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="hero" class="hero reveal">
+      <div class="hero-content">
+        <p class="eyebrow">Friday · November 7 · 2026</p>
+        <h1>Join us in wine country</h1>
+        <p class="intro">We're thrilled to celebrate our wedding weekend with you at Roblar Winery in the heart of Santa Ynez wine country. Join us for a celebration of love, exceptional wine, and unforgettable moments among the vines.</p>
+        <div class="hero-cta">
+          <a href="#details" class="btn primary">View Event Details</a>
+          <a href="#rsvp" class="btn secondary">RSVP Guidance</a>
+        </div>
+      </div>
+      <div class="hero-photos">
+        <figure class="photo-card">
+          <img src="assets/images/Iceland-rainbow.jpg" alt="Iceland Rainbow in back">
+        </figure>
+        <figure class="photo-card">
+          <img src="assets/images/engagment-day.jpg" alt="Engaged!">
+        </figure>
+      </div>
+      <!-- Scroll Indicator -->
+      <div class="scroll-indicator" onclick="document.getElementById('details').scrollIntoView({ behavior: 'smooth' })">
+        <span>Discover Our Story</span>
+        <div class="scroll-arrow">↓</div>
+      </div>
+    </section>
+
+    <section id="details" class="details reveal">
+      <div class="section-heading">
+        <p class="eyebrow">Event Details</p>
+        <h2>Where, when, and what to expect</h2>
+      </div>
+      <div class="details-grid">
+        <article class="detail-card glass">
+          <h3>Ceremony & Reception</h3>
+          <p class="detail-highlight">Roblar Winery</p>
+          <p>3010 Roblar Avenue<br>Santa Ynez, California</p>
+          <p>Ceremony begins at <strong>4:00 PM</strong><br>Followed by cocktail hour + reception with dinner and relaxed atmosphere.</p>
+        </article>
+        <article class="detail-card glass">
+          <h3>Weekend Schedule</h3>
+          <div class="venue-info-link" style="text-align: center; margin-top: 3rem;">
+
+          </div>
+          <ul class="schedule">
+            <li>
+              <span>Nov 6, 4PM</span>
+              Check-in at Roblar Farm
+            </li>            
+            <li>
+              <span>Nov 6, 6PM</span>
+              Welcome Party at Roblar Farm
+            </li>
+            <li>
+              <span>Nov 7, 4PM</span>
+              Wedding Begins at Roblar Winery
+            </li>
+            <li>
+              <span>Nov 8, 11AM</span>
+              Check-out from Roblar Farm
+            </li>
+          </ul>
+        </article>
+        <article class="detail-card glass amenities">
+          <h3>Accommodation</h3>
+          <p class="detail-highlight">Roblar Farm Stay</p>
+          <p>All guests will stay on-site at the beautiful Roblar Farmhouse and grounds, creating an intimate weekend celebration together.</p>
+          <ul>
+            <li>Check-in: 4:00 PM on November 6, 2026</li>
+            <li>Check-out: 11:00 AM on November 8, 2026</li>
+          </ul>
+        </article>
+      </div>
+      <div class="venue-info-link" style="text-align: center; margin-top: 3rem;">
+        <p class="venue-link-text">
+          For more information on the venue and accommodations, see the
+          <a href="venue.html">Venue Information</a>
+        </p>
+      </div>
+    </section>
+
+    <section id="story" class="story reveal">
+      <div class="section-heading">
+        <p class="eyebrow">Our Story</p>
+        <h2>From Hinge to Hitched</h2>
+      </div>
+
+      <!-- Timeline Component -->
+      <div class="timeline-container">
+        <div class="timeline-item" data-index="0">
+          <div class="timeline-marker">
+            <div class="timeline-icon">🍜</div>
+            <div class="timeline-line"></div>
+          </div>
+          <div class="timeline-content glass">
+            <h3>First Date</h3>
+            <p class="timeline-date">March 30, 2022</p>
+            <p>Robby and Claire met on Hinge and had their first date at Little Fatty in LA</p>
+            <p>Spent the night talking about 90 Day Fiance and orange chicken.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item" data-index="1">
+          <div class="timeline-marker">
+            <div class="timeline-icon">✈️</div>
+            <div class="timeline-line"></div>
+          </div>
+          <div class="timeline-content glass">
+            <h3>Long Distance</h3>
+            <p class="timeline-date">June 12, 2022</p>
+            <p>Robby moved from Los Angeles to the SF Bay Area</p>
+            <p>They both got to know Los Angeles International and San Jose International airports intimately. Robby would make >100 Southwest flights over two years.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item" data-index="2">
+          <div class="timeline-marker">
+            <div class="timeline-icon">🏡</div>
+            <div class="timeline-line"></div>
+          </div>
+          <div class="timeline-content glass">
+            <h3>Roommates!</h3>
+            <p class="timeline-date">June 1, 2024</p>
+            <p>After two years of long distance, they finally moved in together in Mountain View, CA. They have an excellent apartment and enjoy the weekly Farmer's Market.</p>
+          </div>
+        </div>
+
+        <div class="timeline-item" data-index="3">
+          <div class="timeline-marker">
+            <div class="timeline-icon">💍</div>
+            <div class="timeline-line"></div>
+          </div>
+          <div class="timeline-content glass">
+            <h3>The Proposal</h3>
+            <p class="timeline-date">September 1, 2025</p>
+            <p>Robby proposed at the stunning Filoli House in San Mateo, surrounded by beautiful gardens.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="photos" class="photos reveal">
+      <div class="section-heading">
+        <p class="eyebrow">Our Journey</p>
+        <h2>Memories together</h2>
+        <p>Some of our favorite moments captured along the way</p>
+      </div>
+
+      <div class="photos-grid">
+        <figure class="photo-card">
+          <img src="assets/images/first-photo-together.jpg" alt="Bay Area">
+        </figure>
+        <figure class="photo-card tall">
+          <img src="assets/images/anna-wedding.jpg" alt="Portland">
+        </figure>
+        <figure class="photo-card wide">
+          <img src="assets/images/france-boat.jpg" alt="Antibes (Sea)">
+        </figure>
+        <figure class="photo-card">
+          <img src="assets/images/eclipse.jpg" alt="Eclipse (Dallas)">
+        </figure>
+        <figure class="photo-card">
+          <img src="assets/images/iceland.jpg" alt="Iceland">
+        </figure>
+        <figure class="photo-card wide">
+          <img src="assets/images/antibes.jpg" alt="Antibes (Land)">
+        </figure>
+      </div>
+      <div class="section-link-button" style="text-align: center; margin-top: 2rem;">
+        <a href="venue.html" class="brand-button">View Venue Photos →</a>
+      </div>
+    </section>
+
+    <section id="rsvp" class="rsvp reveal">
+      <div class="section-heading">
+        <p class="eyebrow">RSVP & Travel</p>
+        <h2>We can't wait to celebrate with you</h2>
+      </div>
+
+      <!-- RSVP Announcement Banner -->
+      <div class="rsvp-announcement">
+        <div class="announcement-icon">✉️</div>
+        <p>We can't celebrate without you</p>
+      </div>
+
+      <!-- RSVP Form Container -->
+      <div class="rsvp-form-wrapper">
+        <div class="rsvp-form-container glass">
+          <!-- RSVP Disabled Overlay (shown until July 2026) -->
+          <div class="rsvp-disabled-overlay" id="rsvpDisabledOverlay">
+            <div class="rsvp-disabled-message">
+              <p>RSVPs will open in July 2026</p>
+            </div>
+          </div>
+
+          <h3>Confirm Your Attendance</h3>
+          <p class="form-intro">Please share your details and dinner preferences so we can prepare for your arrival.</p>
+
+          <!-- Guest Count Selector -->
+          <div class="guest-count-selector">
+            <button class="guest-count-btn active" data-count="1">
+              <span class="guest-icon">👤</span>
+              <span>1 Guest</span>
+            </button>
+            <button class="guest-count-btn" data-count="2">
+              <span class="guest-icon">👥</span>
+              <span>2 Guests</span>
+            </button>
+            <div class="selector-indicator"></div>
+          </div>
+
+          <!-- Dynamic Guest Forms -->
+          <form id="rsvpForm" class="rsvp-form">
+            <div id="guestFormsContainer" class="guest-forms-container">
+              <!-- Guest forms will be dynamically generated here -->
+            </div>
+
+            <!-- Shared Fields -->
+            <div class="shared-fields">
+              <div class="form-field">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required placeholder="your@email.com">
+              </div>
+
+              <div class="form-field">
+                <label for="comments">Special Requests or Dietary Notes <span class="optional">(optional)</span></label>
+                <textarea id="comments" name="comments" rows="4" placeholder="Any dietary restrictions, accessibility needs, or special requests we should know about..."></textarea>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn primary submit-btn">
+              <span class="btn-text">Confirm RSVP</span>
+              <span class="btn-loading" style="display: none;">
+                <span class="loading-spinner"></span>
+                Submitting...
+              </span>
+            </button>
+
+            <!-- Form Messages -->
+            <div id="formSuccess" class="form-message success" style="display: none;">
+              <div class="message-icon">🎉</div>
+              <h4>Thank you for your RSVP!</h4>
+              <p>We're thrilled you'll be joining us for our wine country celebration. See you in November!</p>
+            </div>
+
+            <div id="formError" class="form-message error" style="display: none;">
+              <div class="message-icon">⚠️</div>
+              <h4>Oops! Something went wrong</h4>
+              <p class="error-text">Please try again or contact us at robbyclairegottesman@gmail.com</p>
+            </div>
+          </form>
+        </div>
+
+        <!-- Travel & Info Cards -->
+        <div class="rsvp-info-grid">
+          <article class="glass">
+            <h3>Getting to Santa Ynez</h3>
+            <p>Roblar Winery is located in the heart of Santa Barbara Wine Country:</p>
+            <ul>
+              <li>2 hours from Los Angeles</li>
+              <li>45 minutes from Santa Barbara</li>
+              <li>Nearest airports: Santa Barbara (SBA) or LAX</li>
+            </ul>
+            <p>Detailed directions will be provided closer to the wedding date.</p>
+          </article>
+          <article class="glass">
+            <h3>Dress Code</h3>
+            <p>Semi-Formal</p>
+            <p>Think elegant garden party. Block heels recommended for uneven terrain. Layers recommended for the evening.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>With love, Robby & Claire · November 7, 2026</p>
+    <p>Questions? <a href="mailto:robbyclairegottesman@gmail.com">robbyclairegottesman@gmail.com</a></p>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

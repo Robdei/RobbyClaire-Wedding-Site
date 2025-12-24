@@ -1,0 +1,13 @@
+{
+  "name": "robby-claire-wedding",
+  "version": "1.0.0",
+  "description": "Robby & Claire's Wedding Website",
+  "scripts": {
+    "postinstall": "cd server && npm install",
+    "start": "cd server && node server.js",
+    "dev": "cd server && npm run dev"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
