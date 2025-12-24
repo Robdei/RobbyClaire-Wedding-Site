@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Robby & Claire's Wedding Website",
   "scripts": {
-    "build": "npm install --prefix server",
     "start": "cd server && node server.js",
     "dev": "cd server && npm run dev"
   },

@@ -1,146 +1,131 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+const { Pool } = require('pg');
 const { v4: uuidv4 } = require('uuid');
 
-// Database file path (in parent directory)
-const DB_PATH = path.join(__dirname, '..', 'wedding.db');
-
-// Initialize database connection
-const db = new sqlite3.Database(DB_PATH, (err) => {
-  if (err) {
-    console.error('Error opening database:', err.message);
-  } else {
-    console.log('Connected to the wedding SQLite database.');
-    initDatabase();
-  }
+// Initialize PostgreSQL connection pool
+// Railway provides DATABASE_URL automatically
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
 });
 
+// Test connection and initialize database
+pool.connect()
+  .then(client => {
+    console.log('Connected to PostgreSQL database.');
+    client.release();
+    initDatabase();
+  })
+  .catch(err => {
+    console.error('Error connecting to database:', err.message);
+  });
+
 // Create tables if they don't exist
-function initDatabase() {
-  // RSVP Responses Table
+async function initDatabase() {
   const createRSVPTableSQL = `
     CREATE TABLE IF NOT EXISTS rsvp_responses (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id SERIAL PRIMARY KEY,
       guest_name TEXT NOT NULL,
       dinner_choice TEXT NOT NULL,
       email TEXT,
       comments TEXT,
       group_id TEXT NOT NULL,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `;
 
-  // Invitees Table - stores normalized names of approved guests
   const createInviteesTableSQL = `
     CREATE TABLE IF NOT EXISTS invitees (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id SERIAL PRIMARY KEY,
       name_normalized TEXT NOT NULL UNIQUE,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `;
 
-  db.run(createRSVPTableSQL, (err) => {
-    if (err) {
-      console.error('Error creating RSVP table:', err.message);
-    } else {
-      console.log('RSVP responses table ready.');
-    }
-  });
+  try {
+    await pool.query(createRSVPTableSQL);
+    console.log('RSVP responses table ready.');
 
-  db.run(createInviteesTableSQL, (err) => {
-    if (err) {
-      console.error('Error creating invitees table:', err.message);
-    } else {
-      console.log('Invitees table ready.');
-    }
-  });
+    await pool.query(createInviteesTableSQL);
+    console.log('Invitees table ready.');
+  } catch (err) {
+    console.error('Error creating tables:', err.message);
+  }
 }
 
 // Insert RSVP response
-function insertRSVP(guests, email, comments, callback) {
+async function insertRSVP(guests, email, comments, callback) {
   const groupId = uuidv4();
   const insertSQL = `
     INSERT INTO rsvp_responses (guest_name, dinner_choice, email, comments, group_id)
-    VALUES (?, ?, ?, ?, ?)
+    VALUES ($1, $2, $3, $4, $5)
   `;
 
-  // Prepare statement for multiple inserts
-  const stmt = db.prepare(insertSQL);
+  const client = await pool.connect();
 
-  let completed = 0;
-  let errors = [];
+  try {
+    await client.query('BEGIN');
 
-  guests.forEach((guest, index) => {
-    stmt.run(
-      guest.name,
-      guest.dinner,
-      email || null,
-      comments || null,
-      groupId,
-      function(err) {
-        if (err) {
-          console.error(`Error inserting guest ${index + 1}:`, err.message);
-          errors.push(err);
-        }
+    for (const guest of guests) {
+      await client.query(insertSQL, [
+        guest.name,
+        guest.dinner,
+        email || null,
+        comments || null,
+        groupId
+      ]);
+    }
 
-        completed++;
+    await client.query('COMMIT');
 
-        // Check if all guests have been processed
-        if (completed === guests.length) {
-          stmt.finalize();
-
-          if (errors.length > 0) {
-            callback(errors[0], null);
-          } else {
-            callback(null, {
-              success: true,
-              groupId: groupId,
-              guestCount: guests.length
-            });
-          }
-        }
-      }
-    );
-  });
+    callback(null, {
+      success: true,
+      groupId: groupId,
+      guestCount: guests.length
+    });
+  } catch (err) {
+    await client.query('ROLLBACK');
+    console.error('Error inserting RSVP:', err.message);
+    callback(err, null);
+  } finally {
+    client.release();
+  }
 }
 
 // Get all RSVPs
-function getAllRSVPs(callback) {
+async function getAllRSVPs(callback) {
   const selectSQL = `
     SELECT * FROM rsvp_responses
     ORDER BY created_at DESC
   `;
 
-  db.all(selectSQL, [], (err, rows) => {
-    if (err) {
-      console.error('Error fetching RSVPs:', err.message);
-      callback(err, null);
-    } else {
-      callback(null, rows);
-    }
-  });
+  try {
+    const result = await pool.query(selectSQL);
+    callback(null, result.rows);
+  } catch (err) {
+    console.error('Error fetching RSVPs:', err.message);
+    callback(err, null);
+  }
 }
 
 // Get RSVPs by group ID
-function getRSVPsByGroupId(groupId, callback) {
+async function getRSVPsByGroupId(groupId, callback) {
   const selectSQL = `
     SELECT * FROM rsvp_responses
-    WHERE group_id = ?
+    WHERE group_id = $1
     ORDER BY id ASC
   `;
 
-  db.all(selectSQL, [groupId], (err, rows) => {
-    if (err) {
-      console.error('Error fetching RSVPs by group:', err.message);
-      callback(err, null);
-    } else {
-      callback(null, rows);
-    }
-  });
+  try {
+    const result = await pool.query(selectSQL, [groupId]);
+    callback(null, result.rows);
+  } catch (err) {
+    console.error('Error fetching RSVPs by group:', err.message);
+    callback(err, null);
+  }
 }
 
 // Get RSVP statistics
-function getRSVPStats(callback) {
+async function getRSVPStats(callback) {
   const statsSQL = `
     SELECT
       COUNT(*) as total_guests,
@@ -151,14 +136,13 @@ function getRSVPStats(callback) {
     FROM rsvp_responses
   `;
 
-  db.get(statsSQL, [], (err, row) => {
-    if (err) {
-      console.error('Error fetching stats:', err.message);
-      callback(err, null);
-    } else {
-      callback(null, row);
-    }
-  });
+  try {
+    const result = await pool.query(statsSQL);
+    callback(null, result.rows[0]);
+  } catch (err) {
+    console.error('Error fetching stats:', err.message);
+    callback(err, null);
+  }
 }
 
 // ============================================================
@@ -166,91 +150,84 @@ function getRSVPStats(callback) {
 // ============================================================
 
 // Insert new invitee with normalized name
-function insertInvitee(nameNormalized, callback) {
+async function insertInvitee(nameNormalized, callback) {
   const insertSQL = `
     INSERT INTO invitees (name_normalized)
-    VALUES (?)
+    VALUES ($1)
+    RETURNING id
   `;
 
-  db.run(insertSQL, [nameNormalized], function(err) {
-    if (err) {
-      console.error('Error inserting invitee:', err.message);
-      callback(err, null);
-    } else {
-      callback(null, {
-        success: true,
-        id: this.lastID
-      });
-    }
-  });
+  try {
+    const result = await pool.query(insertSQL, [nameNormalized]);
+    callback(null, {
+      success: true,
+      id: result.rows[0].id
+    });
+  } catch (err) {
+    console.error('Error inserting invitee:', err.message);
+    callback(err, null);
+  }
 }
 
-// Get all normalized names for validation (no hashes exposed)
-function getAllInviteesNormalized(callback) {
+// Get all normalized names for validation
+async function getAllInviteesNormalized(callback) {
   const selectSQL = `
     SELECT id, name_normalized
     FROM invitees
     ORDER BY name_normalized ASC
   `;
 
-  db.all(selectSQL, [], (err, rows) => {
-    if (err) {
-      console.error('Error fetching invitees:', err.message);
-      callback(err, null);
-    } else {
-      callback(null, rows);
-    }
-  });
+  try {
+    const result = await pool.query(selectSQL);
+    callback(null, result.rows);
+  } catch (err) {
+    console.error('Error fetching invitees:', err.message);
+    callback(err, null);
+  }
 }
 
 // Get invitee count
-function getInviteeCount(callback) {
+async function getInviteeCount(callback) {
   const countSQL = `
     SELECT COUNT(*) as count
     FROM invitees
   `;
 
-  db.get(countSQL, [], (err, row) => {
-    if (err) {
-      console.error('Error counting invitees:', err.message);
-      callback(err, null);
-    } else {
-      callback(null, row.count);
-    }
-  });
+  try {
+    const result = await pool.query(countSQL);
+    callback(null, parseInt(result.rows[0].count));
+  } catch (err) {
+    console.error('Error counting invitees:', err.message);
+    callback(err, null);
+  }
 }
 
 // Delete all invitees (dangerous - admin only)
-function deleteAllInvitees(callback) {
+async function deleteAllInvitees(callback) {
   const deleteSQL = `DELETE FROM invitees`;
 
-  db.run(deleteSQL, function(err) {
-    if (err) {
-      console.error('Error deleting invitees:', err.message);
-      callback(err, null);
-    } else {
-      callback(null, {
-        success: true,
-        deleted: this.changes
-      });
-    }
-  });
+  try {
+    const result = await pool.query(deleteSQL);
+    callback(null, {
+      success: true,
+      deleted: result.rowCount
+    });
+  } catch (err) {
+    console.error('Error deleting invitees:', err.message);
+    callback(err, null);
+  }
 }
 
-// Close database connection
+// Close database connection pool
 function closeDatabase() {
-  db.close((err) => {
-    if (err) {
-      console.error('Error closing database:', err.message);
-    } else {
-      console.log('Database connection closed.');
-    }
-  });
+  pool.end()
+    .then(() => console.log('Database connection pool closed.'))
+    .catch(err => console.error('Error closing database:', err.message));
 }
 
 // Export functions
 module.exports = {
-  db,
+  pool,
   insertRSVP,
   getAllRSVPs,
   getRSVPsByGroupId,
