@@ -639,6 +639,26 @@ p {
   gap: 1.5rem;
 }
 
+/* Hero photo cards - specific styling */
+.hero-photos .photo-card {
+  margin: 0; /* Remove default figure margins */
+  height: 280px; /* Match image height */
+}
+
+.hero-photos .photo-card img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (min-width: 600px) {
+  .hero-photos .photo-card {
+    height: 360px;
+  }
+}
+
 .photo-card {
   position: relative;
   border-radius: 30px;
