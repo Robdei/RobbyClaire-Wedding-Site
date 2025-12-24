@@ -647,8 +647,6 @@ p {
   box-shadow: var(--shadow-soft);
   cursor: pointer;
   transition: var(--transition-smooth);
-  margin: 0; /* Remove default figure margins */
-  height: 280px; /* Explicit height to match image */
 }
 
 .photo-card:hover {
@@ -659,7 +657,7 @@ p {
 
 .photo-card img {
   width: 100%;
-  height: 100%;
+  height: 280px;
   object-fit: cover;
   display: block;
   transition: var(--transition-smooth);
@@ -670,7 +668,7 @@ p {
 }
 
 @media (min-width: 600px) {
-  .photo-card {
+  .photo-card img {
     height: 360px;
   }
 }
