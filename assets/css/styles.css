@@ -1069,7 +1069,7 @@ p {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
-  grid-auto-rows: auto;
+  grid-auto-rows: 280px;
 }
 
 .photo-card {
@@ -1153,6 +1153,7 @@ p {
   .photos-grid {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1rem;
+    grid-auto-rows: 250px;
   }
 
   .photo-card.wide {
@@ -1164,6 +1165,7 @@ p {
   .photos-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
+    grid-auto-rows: 250px;
   }
 
   .photo-card.tall,
