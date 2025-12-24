@@ -1544,12 +1544,25 @@ p {
   transform: translateY(40px);
   filter: blur(12px);
   transition: opacity 0.8s ease, transform 0.8s ease, filter 0.8s ease;
+  /* Safari fallback: auto-reveal after delay if JS/IntersectionObserver fails */
+  animation: safariRevealFallback 0.8s ease 1.5s forwards;
 }
 
 .reveal.visible {
   opacity: 1;
   transform: translateY(0);
   filter: blur(0);
+  /* Cancel fallback animation once JS adds .visible */
+  animation: none;
+}
+
+/* Safari fallback animation - reveals content after 1.5s delay */
+@keyframes safariRevealFallback {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
 }
 
 /* Staggered reveal animations for grid items */
@@ -1559,6 +1572,8 @@ p {
   opacity: 0;
   transform: translateY(30px);
   transition: opacity 0.6s ease, transform 0.6s ease;
+  /* Safari fallback: auto-reveal grid items after delay */
+  animation: safariGridFallback 0.6s ease 2s forwards;
 }
 
 .details-grid .detail-card.visible,
@@ -1566,6 +1581,15 @@ p {
 .rsvp-grid article.visible {
   opacity: 1;
   transform: translateY(0);
+  animation: none;
+}
+
+/* Safari fallback for grid items */
+@keyframes safariGridFallback {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Lightbox Modal */

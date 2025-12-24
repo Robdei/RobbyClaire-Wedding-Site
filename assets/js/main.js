@@ -46,6 +46,19 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ============================================================
+  // SAFARI FALLBACK: Force visibility after timeout
+  // IntersectionObserver has known issues on iOS Safari
+  // ============================================================
+  setTimeout(() => {
+    document.querySelectorAll(".reveal:not(.visible)").forEach((el) => {
+      el.classList.add("visible");
+    });
+    document.querySelectorAll(".detail-card:not(.visible), .gallery-card:not(.visible), .photo-card:not(.visible)").forEach((el) => {
+      el.classList.add("visible");
+    });
+  }, 2500);
+
+  // ============================================================
   // SMOOTH SCROLL FOR NAVIGATION LINKS
   // ============================================================
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
