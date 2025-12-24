@@ -140,6 +140,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const heroPhotos = document.querySelectorAll(".hero-photos .photo-card img, .story-photo-stack img");
 
   function parallaxEffect() {
+    // Disable parallax on mobile - causes layout issues with absolute positioning
+    if (window.innerWidth < 600) {
+      heroPhotos.forEach((photo) => {
+        photo.style.transform = '';
+      });
+      return;
+    }
     const scrolled = window.scrollY;
     heroPhotos.forEach((photo, index) => {
       const speed = 0.5 + index * 0.1;
