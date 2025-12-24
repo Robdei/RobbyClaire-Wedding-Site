@@ -518,7 +518,6 @@ p {
   margin-bottom: 2rem;
   position: relative;
   z-index: 1;
-  max-width: 38ch;
 }
 
 .hero-cta {
@@ -567,13 +566,21 @@ p {
     0 8px 20px rgba(139, 69, 19, 0.35);
   font-size: 1rem;
   padding: 1.1rem 2.2rem;
+  animation: breathe 4s ease-in-out infinite;
 }
 
-.btn.primary:active {
-  transform: translateY(1px);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.1) inset,
-    0 4px 12px rgba(139, 69, 19, 0.3);
+@keyframes breathe {
+  0%, 100% {
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.1) inset,
+      0 8px 20px rgba(139, 69, 19, 0.35);
+  }
+  50% {
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.1) inset,
+      0 12px 35px rgba(139, 69, 19, 0.6),
+      0 0 40px rgba(184, 147, 94, 0.3);
+  }
 }
 
 .btn.primary::after {
@@ -2060,23 +2067,16 @@ p {
 /* Mobile improvements */
 @media (max-width: 768px) {
   .countdown {
-    gap: 0.75rem;
-    opacity: 0.7;
-    transform: scale(0.9);
-    margin-bottom: 1rem;
+    gap: 1rem;
   }
 
   .countdown-item {
-    min-width: 65px;
-    padding: 0.75rem;
+    min-width: 80px;
+    padding: 1rem;
   }
 
   .countdown-number {
-    font-size: 1.5rem;
-  }
-
-  .countdown-label {
-    font-size: 0.65rem;
+    font-size: 2rem;
   }
 
   .scroll-to-top {
@@ -2699,16 +2699,28 @@ p {
     font-size: 1rem;
   }
 
-  /* Mobile CTA - natural flow, not sticky */
+  /* Mobile sticky CTA bar */
   .hero-cta {
+    position: sticky;
+    bottom: 1rem;
+    z-index: 100;
+    padding: 1rem;
+    background: rgba(26, 20, 16, 0.95);
+    border: 2px solid var(--primary);
+    border-radius: 16px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 -4px 30px rgba(184, 147, 94, 0.5);
     flex-direction: column;
-    gap: 0.75rem;
   }
 
   .hero-cta .btn {
     width: 100%;
-    padding: 1rem 1.5rem;
-    font-size: 0.95rem;
+    padding: 1.2rem;
+    font-size: 1rem;
+  }
+
+  .hero-cta .btn.primary {
+    margin-bottom: 0.8rem;
   }
 
   /* Mobile sticky section headings */
