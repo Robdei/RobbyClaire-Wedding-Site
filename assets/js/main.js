@@ -511,13 +511,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const dinnerOptions = [
     {
       value: "vegetarian",
-      name: "Wild Mushroom Risotto",
-      description: "Pine nuts, mascarpone cheese, farm herbs"
+      name: "Farm Fresh Vegetarian Pasta",
+      description: "Made from vegetables grown on Roblar Farm, vegan"
     },
     {
       value: "fish",
-      name: "Roasted Branzino",
-      description: "Israeli couscous, tomato coulis"
+      name: "Herb Roasted Chicken Breast",
+      description: "Italian style polenta, farm vegetable, natural jus"
     },
     {
       value: "meat",
