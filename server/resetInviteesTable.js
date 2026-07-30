@@ -1,76 +1,43 @@
 // ============================================================
 // RESET INVITEES TABLE
 // ============================================================
-// Drops the old invitees table (with hash/salt columns)
-// Recreates with new simplified schema (just name_normalized)
-// Re-imports names from CSV
+// Drops the existing invitees table, recreates it with the
+// current schema, and re-imports names from a CSV file.
 //
-// Usage: node resetInviteesTable.js
+// Usage: node resetInviteesTable.js [path/to/names.csv]
+//   Defaults to ../acceptable-names-fixed.csv if no path is given.
 
-const sqlite3 = require('sqlite3').verbose();
+require('dotenv').config();
 const path = require('path');
 const fs = require('fs');
 const csv = require('csv-parser');
 const { normalizeName } = require('./inviteeManager');
-
-const DB_PATH = path.join(__dirname, '..', 'wedding.db');
+const { pool, closeDatabase } = require('./database');
 
 console.log('🔄 Starting invitees table reset...\n');
 
-// Connect to database
-const db = new sqlite3.Database(DB_PATH, (err) => {
-  if (err) {
-    console.error('❌ Error opening database:', err.message);
-    process.exit(1);
-  }
-  console.log('✓ Connected to database');
-});
-
 // Step 1: Drop old table
-function dropOldTable() {
-  return new Promise((resolve, reject) => {
-    const dropSQL = 'DROP TABLE IF EXISTS invitees';
-
-    db.run(dropSQL, (err) => {
-      if (err) {
-        console.error('❌ Error dropping table:', err.message);
-        reject(err);
-      } else {
-        console.log('✓ Dropped old invitees table');
-        resolve();
-      }
-    });
-  });
+async function dropOldTable() {
+  await pool.query('DROP TABLE IF EXISTS invitees');
+  console.log('✓ Dropped old invitees table');
 }
 
-// Step 2: Create new simplified table
-function createNewTable() {
-  return new Promise((resolve, reject) => {
-    const createSQL = `
-      CREATE TABLE invitees (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name_normalized TEXT NOT NULL UNIQUE,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-      )
-    `;
-
-    db.run(createSQL, (err) => {
-      if (err) {
-        console.error('❌ Error creating table:', err.message);
-        reject(err);
-      } else {
-        console.log('✓ Created new invitees table (simplified schema)');
-        resolve();
-      }
-    });
-  });
+// Step 2: Create new table (matches database.js schema)
+async function createNewTable() {
+  const createSQL = `
+    CREATE TABLE invitees (
+      id SERIAL PRIMARY KEY,
+      name_normalized TEXT NOT NULL UNIQUE,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
+  await pool.query(createSQL);
+  console.log('✓ Created new invitees table (simplified schema)');
 }
 
 // Step 3: Import names from CSV
-function importNamesFromCSV() {
+function importNamesFromCSV(csvPath) {
   return new Promise((resolve, reject) => {
-    const csvPath = path.join(__dirname, '..', 'acceptable-names-fixed.csv');
-
     if (!fs.existsSync(csvPath)) {
       reject(new Error(`CSV file not found: ${csvPath}`));
       return;
@@ -78,17 +45,15 @@ function importNamesFromCSV() {
 
     console.log(`✓ Reading CSV: ${csvPath}\n`);
 
-    const insertSQL = 'INSERT INTO invitees (name_normalized) VALUES (?)';
-    const stmt = db.prepare(insertSQL);
-
     let importCount = 0;
     let errorCount = 0;
     const errors = [];
+    const rowPromises = [];
 
     fs.createReadStream(csvPath)
       .pipe(csv())
       .on('data', (row) => {
-        const name = row.name || row.Name;
+        const name = row.name || row.Name || row.NAME;
 
         if (!name || name.trim() === '') {
           errorCount++;
@@ -98,29 +63,36 @@ function importNamesFromCSV() {
 
         const normalized = normalizeName(name);
 
-        stmt.run(normalized, function(err) {
-          if (err) {
-            errorCount++;
-            errors.push(`${name}: ${err.message}`);
-          } else {
+        // ON CONFLICT keeps the run idempotent if a name appears twice
+        const p = pool
+          .query(
+            'INSERT INTO invitees (name_normalized) VALUES ($1) ON CONFLICT (name_normalized) DO NOTHING',
+            [normalized]
+          )
+          .then(() => {
             importCount++;
             console.log(`  ✓ Imported: ${name} → ${normalized}`);
-          }
-        });
+          })
+          .catch((err) => {
+            errorCount++;
+            errors.push(`${name}: ${err.message}`);
+          });
+
+        rowPromises.push(p);
       })
-      .on('end', () => {
-        stmt.finalize(() => {
-          console.log(`\n📊 Import Summary:`);
-          console.log(`   Successfully imported: ${importCount}`);
-          console.log(`   Failed: ${errorCount}`);
+      .on('end', async () => {
+        await Promise.all(rowPromises);
 
-          if (errors.length > 0) {
-            console.log('\n❌ Errors:');
-            errors.forEach(err => console.log(`   - ${err}`));
-          }
+        console.log(`\n📊 Import Summary:`);
+        console.log(`   Successfully imported: ${importCount}`);
+        console.log(`   Failed: ${errorCount}`);
 
-          resolve({ importCount, errorCount });
-        });
+        if (errors.length > 0) {
+          console.log('\n❌ Errors:');
+          errors.forEach((err) => console.log(`   - ${err}`));
+        }
+
+        resolve({ importCount, errorCount });
       })
       .on('error', (err) => {
         reject(err);
@@ -130,27 +102,23 @@ function importNamesFromCSV() {
 
 // Execute all steps sequentially
 async function resetDatabase() {
+  const csvPath = process.argv[2]
+    ? path.resolve(process.argv[2])
+    : path.join(__dirname, '..', 'acceptable-names-fixed.csv');
+
   try {
     await dropOldTable();
     await createNewTable();
-    await importNamesFromCSV();
+    await importNamesFromCSV(csvPath);
 
     console.log('\n✅ Invitees table reset complete!');
-
-    // Close database
-    db.close((err) => {
-      if (err) {
-        console.error('Error closing database:', err.message);
-      }
-      process.exit(0);
-    });
-
+    closeDatabase();
+    process.exit(0);
   } catch (error) {
     console.error('\n❌ Reset failed:', error.message);
-    db.close();
+    closeDatabase();
     process.exit(1);
   }
 }
 
-// Run the reset
 resetDatabase();

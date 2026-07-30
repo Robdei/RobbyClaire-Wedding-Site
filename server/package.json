@@ -12,7 +12,7 @@
     "wedding",
     "rsvp",
     "express",
-    "sqlite"
+    "postgres"
   ],
   "author": "",
   "license": "ISC",

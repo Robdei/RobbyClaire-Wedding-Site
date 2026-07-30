@@ -855,7 +855,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       // Submit to backend
-      const response = await fetch('http://localhost:3000/api/rsvp', {
+      const response = await fetch('/api/rsvp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

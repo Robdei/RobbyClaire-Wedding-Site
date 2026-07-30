@@ -12,7 +12,6 @@ const {
   deleteAllInvitees,
   closeDatabase
 } = require('./database');
-const { validateAtLeastOneMatch } = require('./inviteeManager');
 const { requireAdminAuth } = require('./authMiddleware');
 const { importInviteesFromCSV } = require('./csvImporter');
 const multer = require('multer');
@@ -128,30 +127,8 @@ app.post('/api/rsvp', rsvpRateLimiter, async (req, res) => {
   }
 
   // ============================================================
-  // INVITEE VALIDATION - Check if at least one guest matches invitee list
+  // Guest-list matching removed - RSVPs are open to anyone.
   // ============================================================
-  try {
-    const guestNames = guests.map(g => g.name);
-    const validationResult = await validateAtLeastOneMatch(guestNames);
-
-    if (!validationResult.isValid) {
-      console.log(`❌ RSVP rejected - No invitee match found for: ${guestNames.join(', ')}`);
-      return res.status(403).json({
-        success: false,
-        error: "We couldn't find your name on the guest list. Please check your spelling or contact us at robbyclairegottesman@gmail.com",
-        details: validationResult.reason
-      });
-    }
-
-    console.log(`✓ Invitee validation passed - Matched: ${validationResult.matchedGuest} (${(validationResult.similarity * 100).toFixed(1)}% similarity)`);
-
-  } catch (error) {
-    console.error('Invitee validation error:', error);
-    return res.status(500).json({
-      success: false,
-      error: 'Unable to validate guest list. Please try again later.'
-    });
-  }
 
   // Insert into database
   insertRSVP(guests, email, comments, (err, result) => {
